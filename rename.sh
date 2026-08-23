@@ -9,15 +9,21 @@ i=1
 for file in *; do
     if [ -f "$file" ] && [ "$file" != "rename.sh" ]; then
 
-        if [[ "$file" =~ ^[0-9]+$ ]]; then
+        if [[ "$file" =~ ^[0-9]+\.[^.]+$ ]]; then
             continue
         fi
 
-        while [ -e "${i}" ]; do
+        if [[ "$file" == *.* ]]; then
+            extension="${file##*.}"
+        else
+            extension=""
+        fi
+
+        while compgen -G "${i}.*" >/dev/null || [ -e "$i" ]; do
             ((i++))
         done
 
-        new_name="${i}"
+        new_name="${i}.${extension}"
         mv -- "$file" "$new_name"
         echo "Renamed: $file -> $new_name"
 
